@@ -1,6 +1,7 @@
 const routers= require('express').Router();
-const controller = require('./controller/service');
-routers.get('/', controller.getUser);
-routers.get('/name', controller.getName);
-routers.get('/email', controller.getEmail);
+const controller = require('../controllers/controller');
+
+routers.get('/', controller.getContacts);
+routers.get('/:id', controller.getContactById);
+
 module.exports = routers;
