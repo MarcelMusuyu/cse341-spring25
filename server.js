@@ -4,11 +4,19 @@ const env = require("dotenv").config();
 
 const connectDB = require('./database/database');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger_output.json'); // Path to your generated Swagger file
+
 // For parsing application/json
 app.use(express.json());
 
 // For parsing application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+
+
+
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /* ***********************
  * Local Server Information

@@ -28,6 +28,19 @@ async function main(){
     }
 }
 
+
+async function createContact(client, newContact){
+    const result = await client.db("cse341contacts").collection("Contacts").insertOne(newContact);
+    console.log(`New contact created with the following id: ${result.insertedId}`);
+}
+
+async function listDatabases(client){
+    const databasesList = await client.db().admin().listDatabases();
+    console.log("Databases:");
+    databasesList.databases.forEach(db => console.log(` - ${db.name}`));
+}
+
+
 async function getClient(){
     const client = new MongoClient(uri);
     try {
@@ -39,17 +52,6 @@ async function getClient(){
         console.error(e);
         throw e;
     }
-}
-
-async function createContact(client, newContact){
-    const result = await client.db("cse341contacts").collection("Contacts").insertOne(newContact);
-    console.log(`New contact created with the following id: ${result.insertedId}`);
-}
-
-async function listDatabases(client){
-    const databasesList = await client.db().admin().listDatabases();
-    console.log("Databases:");
-    databasesList.databases.forEach(db => console.log(` - ${db.name}`));
 }
 
 
