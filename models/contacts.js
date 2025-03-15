@@ -1,26 +1,36 @@
 const mongoose = require('mongoose'); // Import mongoose
 const Schema = mongoose.Schema; // Get Schema from mongoose
-const userSchema = new Schema({
-    fistName: {
-        type: String,
-        required: true
-    },
-    lastName: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    favoriteColor: {
-        type: String,
-        required: true
-    },
-    birthdate: {
-        type: Date,
-        default: Date.now
-    }
+const contactSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    lowercase: true,
+    match: [
+      /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+      'Please enter a valid email address',
+    ],
+  },
+  favoriteColor: {
+    type: String,
+    trim: true,
+  },
+  birthDate: {
+    type: Date,
+  },
 });
-const Contacts = mongoose.model('Contacts', userSchema);
-module.exports = Contacts;
+
+const Contact = mongoose.model('Contacts', contactSchema);
+
+module.exports = Contact;

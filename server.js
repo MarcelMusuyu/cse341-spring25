@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const express = require('express');
 const app = express();
+const mongoose = require('mongoose');
 const env = require("dotenv").config();
 
 const connectDB = require('./database/database');
@@ -26,11 +27,21 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const port = process.env.PORT;
 const host = process.env.HOST;
 
-connectDB.main().catch(console.error);
+// connectDB.main().catch(console.error);
 
         // Define your routes here
 const routes = require('./routes/route'); // Adjust path as needed
 app.use('/', routes);
-app.listen(port, () => {
-    console.log(`trial app listening on <span class="math-inline">${host} ${port}`);
-});
+
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('Connected to MongoDB');
+    app.listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });

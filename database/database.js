@@ -1,14 +1,14 @@
 const env = require("dotenv").config()
 const { MongoClient } = require('mongodb');
 const { ObjectId } = require('mongodb');
-const uri=process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI;
 //console.log(uri);
 
 async function main(){
     const client = new MongoClient(uri);
     try {
         await client.connect();
-        console.log("Connected to the database");
+       
         //await listDatabases(client);
         // return client.db();
 
@@ -29,16 +29,16 @@ async function main(){
 }
 
 
-async function createContact(client, newContact){
-    const result = await client.db("cse341contacts").collection("Contacts").insertOne(newContact);
-    console.log(`New contact created with the following id: ${result.insertedId}`);
-}
+// async function createContact(client, newContact){
+//     const result = await client.db("cse341contacts").collection("Contacts").insertOne(newContact);
+//     console.log(`New contact created with the following id: ${result.insertedId}`);
+// }
 
-async function listDatabases(client){
-    const databasesList = await client.db().admin().listDatabases();
-    console.log("Databases:");
-    databasesList.databases.forEach(db => console.log(` - ${db.name}`));
-}
+// async function listDatabases(client){
+//     const databasesList = await client.db().admin().listDatabases();
+//     console.log("Databases:");
+//     databasesList.databases.forEach(db => console.log(` - ${db.name}`));
+// }
 
 
 async function getClient(){
@@ -84,10 +84,62 @@ async function getContacts (client){
 }
  
 
-async function createListContacts(client, contacts){
-     const result = await client.db("cse341contacts").collection("Contacts").insertMany(contacts);
-     console.log(`${result.insertedCount} new contacts created `);
-    console.log(`New contact created with the following id: ${result.insertedId}`);
+async function createContact(client, newContact) {
+  try {
+    const result = await client.db("cse341contacts").collection("Contacts").insertOne(newContact);
+
+    if (result.insertedId) {
+      return { _id: result.insertedId, ...newContact }; // Return the inserted document with _id
+    } else {
+      return undefined; // Or null, indicating insertion failed
+    }
+  } catch (error) {
+    console.error("Error in createContact:", error);
+    return undefined; // Or null, indicating an error occurred
+  }
 }
-module.exports = { main, findById, getContacts, getClient };
+
+
+async function updateContact(client, id, updatedContact) {
+  try {
+    const objectId = new ObjectId(id);
+    const result = await client.db("cse341contacts").collection("Contacts").findOneAndUpdate(
+      { _id: objectId },
+      { $set: updatedContact },
+      { returnDocument: 'after' } // Return the modified document
+    );
+
+    if (result.value) {
+      return result.value;
+    } else {
+      return undefined; // Or null, indicating the contact wasn't found or update failed
+    }
+  } catch (error) {
+    console.error("Error in updateContact:", error);
+    return undefined; // Or null, indicating an error occurred
+  }
+}
+
+async function deleteContact(client, id) {
+  try {
+    const objectId = new ObjectId(id);
+    const result = await client.db("cse341contacts").collection("Contacts").deleteOne({ _id: objectId });
+
+    if (result.deletedCount === 1) {
+      return { deletedCount: 1 }; // Indicate successful deletion
+    } else {
+      return undefined; // Or null, indicating the contact wasn't found or deletion failed
+    }
+  } catch (error) {
+    console.error("Error in deleteContact:", error);
+    return undefined; // Or null, indicating an error occurred
+  }
+}
+
+// async function createListContacts(client, contacts){
+//      const result = await client.db("cse341contacts").collection("Contacts").insertMany(contacts);
+//      console.log(`${result.insertedCount} new contacts created `);
+//     console.log(`New contact created with the following id: ${result.insertedId}`);
+// }
+module.exports = { main, findById, getContacts, getClient, createContact, updateContact, deleteContact };
 
