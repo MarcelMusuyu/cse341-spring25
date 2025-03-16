@@ -61,8 +61,15 @@ const getContactById = async (req, res, next) => {
 const createNewContact = async (req, res) => {
   const client = await mongodb.getClient();
   try {
-    
-    const newContact = req.body;
+  
+    const newContact = {
+       firstName: req.body.firstName,
+       lastName : req.body.lastName,
+       email : req.body.email,
+       favoriteColor: req.body.favoriteColor,
+       birthDate: new Date(req.body.birthDate)
+
+    };
     const createdContact = await mongodb.createContact(client, newContact);
     if (!createdContact) {
       return res.status(500).json({ message: 'Failed to create contact' });

@@ -89,7 +89,7 @@ async function createContact(client, newContact) {
     const result = await client.db("cse341contacts").collection("Contacts").insertOne(newContact);
 
     if (result.insertedId) {
-      return { _id: result.insertedId, ...newContact }; // Return the inserted document with _id
+      return { _id: result.insertedId, newContact }; // Return the inserted document with _id
     } else {
       return undefined; // Or null, indicating insertion failed
     }
@@ -103,14 +103,16 @@ async function createContact(client, newContact) {
 async function updateContact(client, id, updatedContact) {
   try {
     const objectId = new ObjectId(id);
-    const result = await client.db("cse341contacts").collection("Contacts").findOneAndUpdate(
+    console.log(id);
+   
+    const result = await client.db("cse341contacts").collection("Contacts").updateOne(
       { _id: objectId },
-      { $set: updatedContact },
-      { returnDocument: 'after' } // Return the modified document
-    );
+      { $set: updatedContact });
 
-    if (result.value) {
-      return result.value;
+       console.log(result);
+
+    if (result.modifiedCount) {
+      return result.modifiedCount; // Indicate successful update
     } else {
       return undefined; // Or null, indicating the contact wasn't found or update failed
     }
