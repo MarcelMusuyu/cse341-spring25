@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const cors = require('cors'); // Import the cors package
 const env = require("dotenv").config();
 
 const connectDB = require('./database/database');
@@ -12,6 +13,7 @@ const swaggerDocument = require('./swagger_output.json'); // Path to your genera
 // For parsing application/json
 app.use(express.json());
 
+app.use(cors({ origin: '*' })); // Enable CORS for all routes
 // For parsing application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
